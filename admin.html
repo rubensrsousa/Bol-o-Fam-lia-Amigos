@@ -87,9 +87,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 <div class="toast" id="toastEl" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(8px);background:#002776;color:#fff;padding:8px 16px;border-radius:18px;font-weight:700;font-size:.78rem;opacity:0;transition:all .22s;pointer-events:none;z-index:999;white-space:nowrap"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
 
 
 var FBCFG = {
@@ -276,15 +276,15 @@ window.fazerLogin = function(){
 };
 
 function iniciarAdmin(){
-  var app=initializeApp(FBCFG);
-  db=getFirestore(app);
+  var app=firebase.initializeApp(FBCFG);
+  db=firebase.firestore();
   // Carrega resultados oficiais
-  getDoc(doc(db,'admin','resultados')).then(function(snap){
-    if(snap.exists()) resultadosOficiais=snap.data().resultados||{};
+  db.collection('admin').doc('resultados').get().then(function(snap){
+    if(snap.exists) resultadosOficiais=snap.data().resultados||{};
     renderResultados();
   });
   // Escuta palpites em tempo real
-  onSnapshot(collection(db,'palpites'),function(snap){
+  db.collection('palpites').onSnapshot(function(snap){
     todosParticipantes=[];
     snap.forEach(function(d){todosParticipantes.push(d.data());});
     renderRanking();
@@ -499,7 +499,7 @@ window.salvarResultados = function(){
       if(ea)ea.classList.add('ok');if(eb)eb.classList.add('ok');
     }
   });
-  setDoc(doc(db,'admin','resultados'),{resultados:resultadosOficiais,ts:Date.now()}).then(function(){
+  db.collection('admin').doc('resultados').set({resultados:resultadosOficiais,ts:Date.now()}).then(function(){
     showToast('&#x2705; Resultados salvos!');
     renderRanking();
   }).catch(function(){showToast('&#x26A0; Erro ao salvar');});

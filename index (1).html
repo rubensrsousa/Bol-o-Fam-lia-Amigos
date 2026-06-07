@@ -130,9 +130,9 @@ body{font-family:Arial,Helvetica,sans-serif;background:#eef0f5;color:#111;min-he
 </div>
 <div class="toast" id="toastEl"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
 
 
 var FBCFG = {
@@ -307,8 +307,8 @@ var db, nomeParticipante, docRef;
 var P = {}; // palpites locais
 
 // ---- INIT FIREBASE ----
-var app = initializeApp(FBCFG);
-db = getFirestore(app);
+var app = firebase.initializeApp(FBCFG);
+db = firebase.firestore();
 
 function entrar() {
   var nome = document.getElementById('inputNomeModal').value.trim();
@@ -316,10 +316,10 @@ function entrar() {
   nomeParticipante = nome;
   document.getElementById('modalNome').style.display = 'none';
   document.getElementById('nomeExib').textContent = nome;
-  docRef = doc(db, 'palpites', nome.toLowerCase().replace(/\s+/g,'_'));
+  docRef = db.collection('palpites').doc(nome.toLowerCase().replace(/\s+/g,'_'));
   // Carrega dados existentes
-  getDoc(docRef).then(function(snap){
-    if(snap.exists()) {
+  docRef.get().then(function(snap){
+    if(snap.exists) {
       P = snap.data().palpites || {};
     }
     render();
@@ -337,7 +337,7 @@ function setStatus(ok,msg){
 
 window.salvar = function() {
   if(!docRef){showToast('Digite seu nome primeiro!');return;}
-  setDoc(docRef,{nome:nomeParticipante,palpites:P,ts:Date.now()}).then(function(){
+  docRef.set({nome:nomeParticipante,palpites:P,ts:Date.now()}).then(function(){
     showToast('&#x2705; Salvo com sucesso!');
     setStatus(true,'Salvo agora');
   }).catch(function(){
@@ -517,7 +517,7 @@ window.upd = function(tipo,id,side,val){
   if(el){if(val!=='')el.classList.add('ok');else el.classList.remove('ok');}
   updClassificados();updTerceiros();updSegundas();updOitavas();updQuartas();updSemi();updFinal();updProg();
   // Auto-salva a cada mudança
-  if(docRef) setDoc(docRef,{nome:nomeParticipante,palpites:P,ts:Date.now()},{merge:true}).catch(function(){});
+  if(docRef) docRef.set({nome:nomeParticipante,palpites:P,ts:Date.now()},{merge:true}).catch(function(){});
 };
 
 function findJogo(id){

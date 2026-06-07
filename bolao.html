@@ -128,7 +128,8 @@ body{font-family:Arial,Helvetica,sans-serif;background:#eef0f5;color:#111;min-he
 </div>
 <div id="app"></div>
 <div class="sv">
-  <button class="btns" onclick="salvar()">&#128190; Salvar Palpites</button>
+  <button class="btns" onclick="salvar()">&#128190; Salvar</button>
+  <button class="btni" onclick="gerarComprovante()" title="Gerar comprovante">&#128203;</button>
 </div>
 <div class="toast" id="toastEl"></div>
 
@@ -531,6 +532,33 @@ function showToast(msg){
   t.innerHTML=msg;t.classList.add('on');
   setTimeout(function(){t.classList.remove('on');},2500);
 }
+
+window.gerarComprovante = function(){
+  if(!nomeParticipante){showToast('Digite seu nome primeiro!');return;}
+  var txt='🏆 BOLÃO COPA 2026\n👤 '+nomeParticipante+'\n';
+  txt+='━━━━━━━━━━━━━━━━━━━━\n';
+  var gkeys=Object.keys(G);
+  for(var gi=0;gi<gkeys.length;gi++){
+    var gl=gkeys[gi],info=G[gl];
+    txt+='\n⚽ GRUPO '+gl+'\n';
+    for(var ji=0;ji<info.jogos.length;ji++){
+      var j=info.jogos[ji];
+      var pp=P['g'+j.id];
+      var va=pp&&pp.a!=null?pp.a:'?';
+      var vb=pp&&pp.b!=null?pp.b:'?';
+      txt+='  #'+j.id+' '+j.t1+' '+va+'×'+vb+' '+j.t2+'\n';
+    }
+  }
+  txt+='\n━━━━━━━━━━━━━━━━━━━━\n';
+  txt+='Salvo em '+new Date().toLocaleString('pt-BR');
+  navigator.clipboard.writeText(txt).then(function(){
+    showToast('📋 Copiado! Cole no WhatsApp.');
+  }).catch(function(){
+    var w=window.open('','_blank');
+    if(w) w.document.write('<pre style="font-family:monospace;padding:20px;font-size:13px">'+txt+'</pre>');
+    else showToast('Não foi possível copiar.');
+  });
+};
 
 // Tela inicial
 document.getElementById('inputNomeModal').addEventListener('keydown',function(e){if(e.key==='Enter')entrar();});

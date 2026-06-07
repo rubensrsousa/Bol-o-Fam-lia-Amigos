@@ -510,7 +510,7 @@ window.salvarResultados = function(){
 // ============================================================
 function renderPalpites(){
   if(tabAtual!=='palpites') return;
-  var html='<div class="card"><div class="card-head">&#128203; PALPITES DOS PARTICIPANTES <span>'+todosParticipantes.length+' enviados</span></div>';
+  var html='<div class="card"><div class="card-head">&#128203; PALPITES DOS PARTICIPANTES <span>'+todosParticipantes.length+' enviados · clique no nome para ver detalhes</span></div>';
   if(todosParticipantes.length===0){
     html+='<div style="padding:30px;text-align:center;color:#6b7899">Nenhum palpite recebido ainda.</div>';
   }
@@ -518,16 +518,103 @@ function renderPalpites(){
     var palpites=p.palpites||{};
     var jogosP=Object.keys(palpites).filter(function(k){var pp=palpites[k];return pp&&pp.a!=null&&pp.b!=null;}).length;
     var r=calcPontos(p);
-    html+='<div style="padding:10px 14px;border-bottom:1px solid #1e293b">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center">'
-      +'<b style="font-size:.9rem">'+p.nome+'</b>'
-      +'<span style="font-size:1.1rem;font-weight:900;color:#00a651">'+r.total+' pts</span></div>'
-      +'<div style="font-size:.7rem;color:#6b7899;margin-top:2px">'+jogosP+' palpites · '+r.acertos+' acertos · '+r.exatos+' placares exatos</div>'
+    var nomeId=p.nome.replace(/[^a-zA-Z0-9]/g,'_');
+    html+='<div style="border-bottom:1px solid #1e293b">'
+      +'<div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleDetalhe(''+nomeId+'')">'
+      +'<div><b style="font-size:.9rem;color:#e8eaf0">'+p.nome+'</b>'
+      +'<div style="font-size:.7rem;color:#6b7899;margin-top:2px">'+jogosP+' palpites · '+r.acertos+' acertos · '+r.exatos+' placares exatos</div></div>'
+      +'<div style="display:flex;align-items:center;gap:10px">'
+      +'<span style="font-size:1.1rem;font-weight:900;color:#00a651">'+r.total+' pts</span>'
+      +'<span style="color:#6b7899;font-size:.8rem">▼</span>'
+      +'</div></div>'
+      +'<div id="det_'+nomeId+'" style="display:none;padding:0 14px 12px">'
+      +gerarDetalheHTML(p)
+      +'</div>'
       +'</div>';
   });
   html+='</div>';
   document.getElementById('tabPalpites').innerHTML=html;
 }
+
+window.toggleDetalhe = function(nomeId){
+  var el=document.getElementById('det_'+nomeId);
+  if(!el) return;
+  el.style.display=el.style.display==='none'?'block':'none';
+};
+
+function gerarDetalheHTML(p){
+  var palpites=p.palpites||{};
+  var html='<div style="margin-bottom:8px;display:flex;gap:8px">'
+    +'<button onclick="gerarComprovante(''+p.nome.replace(/'/g,"\'")+'')" style="background:#002776;color:#f5d400;border:none;border-radius:8px;padding:6px 14px;font-size:.78rem;font-weight:700;cursor:pointer">📋 Gerar Comprovante</button>'
+    +'</div>';
+  
+  // Grupos
+  var gkeys=Object.keys(G);
+  for(var gi=0;gi<gkeys.length;gi++){
+    var gl=gkeys[gi],info=G[gl];
+    html+='<div style="font-size:.68rem;font-weight:900;color:#f5d400;margin:8px 0 4px;letter-spacing:1px">GRUPO '+gl+'</div>';
+    for(var ji=0;ji<info.jogos.length;ji++){
+      var j=info.jogos[ji];
+      var pp=palpites['g'+j.id];
+      var va=pp&&pp.a!=null?pp.a:'—';
+      var vb=pp&&pp.b!=null?pp.b:'—';
+      var res=resultadosOficiais['g'+j.id];
+      var pts='';
+      if(res&&res.a!=null&&pp&&pp.a!=null){
+        var ra=+res.a,rb=+res.b,pa=+pp.a,pb=+pp.b;
+        if(pa===ra&&pb===rb) pts='<span style="color:#00a651;font-weight:700">+10</span>';
+        else if((ra>rb&&pa>pb)||(ra<rb&&pa<pb)||(ra===rb&&pa===pb)) pts='<span style="color:#e8601c;font-weight:700">+5</span>';
+        else pts='<span style="color:#c0392b">0</span>';
+      }
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 0;border-bottom:1px solid #1e293b;font-size:.75rem">'
+        +'<span style="color:#8899bb;min-width:18px">#'+j.id+'</span>'
+        +'<span style="flex:1;color:#e8eaf0">'+j.t1+'</span>'
+        +'<span style="font-weight:900;color:#f5d400;margin:0 6px">'+va+' × '+vb+'</span>'
+        +'<span style="flex:1;text-align:right;color:#e8eaf0">'+j.t2+'</span>'
+        +'<span style="min-width:30px;text-align:right">'+pts+'</span>'
+        +'</div>';
+    }
+  }
+  return html;
+}
+
+window.gerarComprovante = function(nome){
+  var part=todosParticipantes.find(function(p){return p.nome===nome;});
+  if(!part) return;
+  var palpites=part.palpites||{};
+  var txt='🏆 BOLÃO COPA 2026
+👤 '+nome+'
+';
+  txt+='━━━━━━━━━━━━━━━━━━━━
+';
+  
+  var gkeys=Object.keys(G);
+  for(var gi=0;gi<gkeys.length;gi++){
+    var gl=gkeys[gi],info=G[gl];
+    txt+='⚽ GRUPO '+gl+'
+';
+    for(var ji=0;ji<info.jogos.length;ji++){
+      var j=info.jogos[ji];
+      var pp=palpites['g'+j.id];
+      var va=pp&&pp.a!=null?pp.a:'?';
+      var vb=pp&&pp.b!=null?pp.b:'?';
+      txt+='  #'+j.id+' '+j.t1+' '+va+' × '+vb+' '+j.t2+'
+';
+    }
+  }
+  txt+='━━━━━━━━━━━━━━━━━━━━
+';
+  txt+='Gerado em '+new Date().toLocaleString('pt-BR');
+  
+  // Copia para clipboard
+  navigator.clipboard.writeText(txt).then(function(){
+    showToast('📋 Comprovante copiado!');
+  }).catch(function(){
+    // Fallback: abre em nova janela
+    var w=window.open('','_blank');
+    w.document.write('<pre style="font-family:monospace;padding:20px">'+txt+'</pre>');
+  });
+};
 
 // ============================================================
 // TABS

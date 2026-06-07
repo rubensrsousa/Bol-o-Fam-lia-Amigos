@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regras — Bolão Copa 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f0f2f5;color:#111;min-height:100vh}
+
+.hd{background:linear-gradient(140deg,#002776 0%,#003ab2 55%,#007a3d 100%);padding:20px 16px;text-align:center;position:relative;overflow:hidden}
+.hd::after{content:'⚽';position:absolute;right:-10px;bottom:-20px;font-size:120px;opacity:.06}
+.hd h1{font-size:1.8rem;font-weight:900;color:#f5d400;letter-spacing:3px;line-height:1.1}
+.hd p{color:rgba(255,255,255,.7);font-size:.8rem;margin-top:4px}
+.hd .prazo{display:inline-block;background:rgba(255,0,0,.25);border:1px solid rgba(255,100,100,.4);color:#ffaaaa;border-radius:20px;padding:4px 14px;font-size:.75rem;font-weight:700;margin-top:10px}
+
+main{max-width:600px;margin:0 auto;padding:14px}
+
+.card{background:#fff;border-radius:12px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.card-head{padding:10px 14px;font-weight:900;font-size:.85rem;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.card-head.verde{background:#007a3d;color:#fff}
+.card-head.azul{background:#002776;color:#f5d400}
+.card-head.laranja{background:#e8601c;color:#fff}
+.card-head.roxo{background:#6b1a8b;color:#fff}
+.card-head.vermelho{background:#c0392b;color:#fff}
+.card-body{padding:14px}
+
+.item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f0f2f8}
+.item:last-child{border-bottom:none}
+.item-icon{font-size:1.1rem;min-width:24px;text-align:center;margin-top:1px}
+.item-text{font-size:.85rem;line-height:1.5;color:#333}
+.item-text b{color:#002776}
+
+.pts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:2px}
+.pts-box{background:#f4f6fb;border-radius:8px;padding:10px;text-align:center;border:1px solid #e0e5f0}
+.pts-box .fase{font-size:.68rem;font-weight:900;color:#002776;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.pts-box .valores{font-size:.78rem;color:#333;line-height:1.6}
+.pts-box .valores span{display:inline-block;background:#002776;color:#f5d400;border-radius:3px;padding:0 5px;font-weight:700;font-size:.72rem;margin:1px}
+.pts-box .valores span.v{background:#007a3d;color:#fff}
+.pts-box .valores span.b{background:#e8601c;color:#fff}
+
+.premio-table{width:100%;border-collapse:collapse}
+.premio-table th{background:#002776;color:#f5d400;padding:8px 10px;font-size:.75rem;text-align:left}
+.premio-table td{padding:9px 10px;border-bottom:1px solid #f0f2f8;font-size:.83rem}
+.premio-table tr:last-child td{border-bottom:none}
+.premio-table .pos{font-weight:900;color:#002776}
+.premio-table .pct{color:#007a3d;font-weight:700}
+.premio-table .ex{color:#888;font-size:.75rem}
+.destaque{background:#fffbea;font-weight:700}
+.ultimo{background:#fff0f0}
+
+.exemplo-box{background:#f4f6fb;border-radius:10px;padding:14px;margin-top:10px}
+.exemplo-box p{font-size:.78rem;color:#666;margin-bottom:8px;font-style:italic}
+.exemplo-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;border-bottom:1px solid #e8eaf0}
+.exemplo-row:last-child{border-bottom:none;font-weight:700;color:#002776;padding-top:8px}
+.exemplo-row .val{font-weight:700;color:#007a3d}
+
+.link-box{background:#002776;border-radius:10px;padding:14px;margin-bottom:8px}
+.link-box .lbl{font-size:.7rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:700}
+.link-box a{color:#f5d400;font-size:.82rem;word-break:break-all;text-decoration:none;font-weight:700}
+.link-box p{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:3px}
+
+.aviso{background:#fff8e6;border:1px solid #f0d060;border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+.aviso-icon{font-size:1.2rem}
+.aviso-text{font-size:.8rem;color:#7a5800;line-height:1.5}
+
+.footer{text-align:center;padding:16px;font-size:.72rem;color:#aaa}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>🏆 Bolão Copa 2026</h1>
+  <p>EUA · Canadá · México · 48 seleções · 104 jogos</p>
+  <div class="prazo">⏰ Prazo para envio dos palpites: 11/06/2026</div>
+</div>
+
+<main>
+
+<!-- COMO PARTICIPAR -->
+<div class="card">
+  <div class="card-head azul">📋 COMO PARTICIPAR</div>
+  <div class="card-body">
+    <div class="item"><div class="item-icon">1️⃣</div><div class="item-text">Acesse o link do bolão e <b>cadastre seu nome</b></div></div>
+    <div class="item"><div class="item-icon">2️⃣</div><div class="item-text">Preencha os <b>palpites de todos os jogos</b> — da fase de grupos até a Final</div></div>
+    <div class="item"><div class="item-icon">3️⃣</div><div class="item-text">Clique em <b>Salvar</b> — seus palpites ficam registrados automaticamente</div></div>
+    <div class="item"><div class="item-icon">4️⃣</div><div class="item-text">Você pode <b>editar</b> seus palpites quantas vezes quiser até o prazo</div></div>
+    <div class="item"><div class="item-icon">5️⃣</div><div class="item-text">Realize o <b>pagamento de R$50,00</b> para confirmar sua participação</div></div>
+    <div class="item"><div class="item-icon">🔒</div><div class="item-text">Após <b>11/06/2026</b> os palpites são bloqueados e não podem mais ser alterados</div></div>
+  </div>
+</div>
+
+<!-- SISTEMA DE PONTUAÇÃO -->
+<div class="card">
+  <div class="card-head verde">⚽ SISTEMA DE PONTUAÇÃO</div>
+  <div class="card-body">
+    <div class="item">
+      <div class="item-icon">🎯</div>
+      <div class="item-text"><b>Placar exato:</b> <span style="background:#007a3d;color:#fff;border-radius:4px;padding:1px 7px;font-weight:700;font-size:.8rem">+10 pts</span> em qualquer fase</div>
+    </div>
+    <div class="item">
+      <div class="item-icon">✅</div>
+      <div class="item-text"><b>Resultado certo</b> (vitória/empate/derrota): <span style="background:#002776;color:#f5d400;border-radius:4px;padding:1px 7px;font-weight:700;font-size:.8rem">+5 pts</span></div>
+    </div>
+    <div style="margin-top:12px">
+      <div style="font-size:.72rem;font-weight:900;color:#002776;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Bônus por acertar o classificado de cada fase:</div>
+      <div class="pts-grid">
+        <div class="pts-box">
+          <div class="fase">Grupos</div>
+          <div class="valores"><span class="b">+5 pts</span> por 1° ou 2° do grupo acertado</div>
+        </div>
+        <div class="pts-box">
+          <div class="fase">Segundas de Final</div>
+          <div class="valores"><span class="b">+5 pts</span> por time classificado</div>
+        </div>
+        <div class="pts-box">
+          <div class="fase">Oitavas de Final</div>
+          <div class="valores"><span class="b">+10 pts</span> por time classificado</div>
+        </div>
+        <div class="pts-box">
+          <div class="fase">Quartas de Final</div>
+          <div class="valores"><span class="b">+15 pts</span> por time classificado</div>
+        </div>
+        <div class="pts-box">
+          <div class="fase">Semifinais</div>
+          <div class="valores"><span class="b">+20 pts</span> por time classificado</div>
+        </div>
+        <div class="pts-box">
+          <div class="fase">Final</div>
+          <div class="valores">
+            <span class="b">+30 pts</span> acertar finalistas<br>
+            <span class="b">+40 pts</span> 3° lugar<br>
+            <span class="b">+45 pts</span> vice-campeão<br>
+            <span class="v">+50 pts</span> campeão
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PREMIAÇÃO -->
+<div class="card">
+  <div class="card-head laranja">🏅 PREMIAÇÃO</div>
+  <div class="card-body">
+    <table class="premio-table">
+      <thead><tr><th>Posição</th><th>% do Prêmio</th><th>Exemplo (20 part.)</th></tr></thead>
+      <tbody>
+        <tr class="destaque">
+          <td class="pos">🥇 1° Lugar</td>
+          <td class="pct">Restante (~70%)</td>
+          <td class="ex">~R$ 700,00</td>
+        </tr>
+        <tr>
+          <td class="pos">🥈 2° Lugar</td>
+          <td class="pct">20%</td>
+          <td class="ex">R$ 200,00</td>
+        </tr>
+        <tr>
+          <td class="pos">🥉 3° Lugar</td>
+          <td class="pct">10%</td>
+          <td class="ex">R$ 100,00</td>
+        </tr>
+        <tr class="ultimo">
+          <td class="pos">😅 Último</td>
+          <td style="color:#c0392b;font-weight:700">Consolação</td>
+          <td class="ex">R$ 50,00 (devolução)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="exemplo-box">
+      <p>* Exemplos calculados com 20 participantes × R$50 = R$1.000 arrecadados</p>
+      <div class="exemplo-row"><span>Total arrecadado (20 × R$50)</span><span class="val">R$ 1.000</span></div>
+      <div class="exemplo-row"><span>(-) Devolução último lugar</span><span style="color:#c0392b;font-weight:700">- R$ 50</span></div>
+      <div class="exemplo-row"><span>Prêmio líquido a distribuir</span><span class="val">R$ 950</span></div>
+      <div class="exemplo-row"><span>🥇 1° lugar (~70%)</span><span class="val">R$ 665</span></div>
+      <div class="exemplo-row"><span>🥈 2° lugar (20%)</span><span class="val">R$ 190</span></div>
+      <div class="exemplo-row"><span>🥉 3° lugar (10%)</span><span class="val">R$ 95</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- DESEMPATE -->
+<div class="card">
+  <div class="card-head roxo">⚖️ CRITÉRIOS DE DESEMPATE</div>
+  <div class="card-body">
+    <div class="item"><div class="item-icon">1️⃣</div><div class="item-text"><b>Maior número de placares exatos</b></div></div>
+    <div class="item"><div class="item-icon">2️⃣</div><div class="item-text"><b>Maior número de resultados certos</b></div></div>
+    <div class="item"><div class="item-icon">3️⃣</div><div class="item-text"><b>Mais times classificados acertados</b></div></div>
+    <div class="item"><div class="item-icon">4️⃣</div><div class="item-text">Em caso de empate total, o prêmio é <b>dividido igualmente</b></div></div>
+  </div>
+</div>
+
+<!-- LINKS -->
+<div class="card">
+  <div class="card-head azul">🔗 LINKS DO BOLÃO</div>
+  <div class="card-body" style="padding:12px;display:flex;flex-direction:column;gap:8px">
+    <div class="link-box">
+      <div class="lbl">📝 Preencher Palpites</div>
+      <a href="https://rubensrsousa.github.io/Bol-o-Fam-lia-Amigos/bolao.html">rubensrsousa.github.io/Bol-o-Fam-lia-Amigos/bolao.html</a>
+      <p>Acesse, digite seu nome e preencha seus palpites</p>
+    </div>
+    <div class="link-box">
+      <div class="lbl">🏆 Ranking em Tempo Real</div>
+      <a href="https://rubensrsousa.github.io/Bol-o-Fam-lia-Amigos/ranking.html">rubensrsousa.github.io/Bol-o-Fam-lia-Amigos/ranking.html</a>
+      <p>Acompanhe a classificação durante a Copa</p>
+    </div>
+  </div>
+</div>
+
+<!-- AVISO -->
+<div class="aviso">
+  <div class="aviso-icon">⚠️</div>
+  <div class="aviso-text">Palpites enviados após <b>11/06/2026</b> não serão aceitos. O sistema bloqueia automaticamente nessa data. Não deixe para a última hora!</div>
+</div>
+
+<div class="footer">🏆 Bolão Copa do Mundo 2026 · Família &amp; Amigos</div>
+
+</main>
+</body>
+</html>

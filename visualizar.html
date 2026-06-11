@@ -25,20 +25,25 @@ body{font-family:Arial,Helvetica,sans-serif;background:#eef0f5;color:#111;min-he
 .layout{display:flex;gap:12px;padding:12px;max-width:1200px;margin:0 auto}
 .col-rank{width:220px;flex-shrink:0}
 .col-pal{flex:1;min-width:0}
-.col-pts{width:80px;flex-shrink:0}
+.col-pts{width:160px;flex-shrink:0}
 
 /* COLUNA DE PONTOS */
 .pts-col-card{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,39,118,.08);overflow:hidden;position:sticky;top:10px}
-.pts-section-label{background:#f0f3f8;font-size:.62rem;font-weight:900;color:#002776;text-transform:uppercase;letter-spacing:.5px;padding:5px 10px;border-bottom:1px solid #e8eaf0}
-.pts-row{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;border-bottom:1px solid #f0f3f8;gap:6px}
-.pts-row:last-child{border-bottom:none}
-.pts-row-jogo{font-size:.68rem;color:#9ab;width:22px;flex-shrink:0}
-.pts-row-badge{font-size:.75rem;font-weight:700;border-radius:4px;padding:1px 7px;min-width:32px;text-align:center}
-.pts-row-badge.ex{background:#007a3d;color:#fff}
-.pts-row-badge.ok{background:#e8601c;color:#fff}
-.pts-row-badge.no{background:#eee;color:#aaa}
-.pts-row-badge.vz{color:#ddd;font-size:.65rem}
-.pts-total-row{display:flex;justify-content:space-between;padding:8px 10px;background:#f8f9fc;font-weight:900;font-size:.82rem;color:#002776;border-top:2px solid #dde2ef}
+.pts-col-subheads{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #dde2ef}
+.pts-col-subhead{font-size:.62rem;font-weight:900;padding:5px 6px;text-align:center;letter-spacing:.5px}
+.pts-col-subhead.s1{background:#007a3d;color:#fff}
+.pts-col-subhead.s2{background:#002776;color:#f5d400}
+.pts-section-label{background:#f0f3f8;font-size:.6rem;font-weight:900;color:#002776;text-transform:uppercase;letter-spacing:.5px;padding:4px 8px;border-bottom:1px solid #e8eaf0;text-align:center;grid-column:span 2}
+.pts-rows-wrap{display:grid;grid-template-columns:1fr 1fr}
+.pts-cell{display:flex;align-items:center;justify-content:center;padding:4px 3px;border-bottom:1px solid #f0f3f8;border-right:1px solid #f0f3f8;min-height:27px}
+.pts-cell:nth-child(even){border-right:none}
+.pts-cell-badge{font-size:.72rem;font-weight:700;border-radius:4px;padding:1px 5px;text-align:center;white-space:nowrap}
+.pts-cell-badge.ex{background:#007a3d;color:#fff}
+.pts-cell-badge.ok{background:#e8601c;color:#fff}
+.pts-cell-badge.no{background:#eee;color:#aaa}
+.pts-cell-badge.vz{color:#ddd}
+.pts-cell-badge.res{background:#f4f6fb;color:#002776;font-weight:900}
+.pts-total-row{display:flex;justify-content:space-between;padding:7px 10px;background:#f8f9fc;font-weight:900;font-size:.8rem;color:#002776;border-top:2px solid #dde2ef}
 
 /* RANKING */
 .rank-card{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,39,118,.08);overflow:hidden;position:sticky;top:10px}
@@ -135,7 +140,11 @@ select:focus{border-color:#00a651}
   <!-- PONTUAÇÃO -->
   <div class="col-pts">
     <div class="pts-col-card">
-      <div class="rank-head">&#127919; PONTUAÇÃO <span id="ptsTotal"></span></div>
+      <div class="rank-head" style="background:#007a3d">&#127919; PONTOS <span id="ptsTotal"></span></div>
+      <div class="pts-col-subheads">
+        <div class="pts-col-subhead s1">Pts</div>
+        <div class="pts-col-subhead s2">Placar</div>
+      </div>
       <div id="ptsColBody"></div>
     </div>
   </div>
@@ -298,12 +307,16 @@ function iniciar(){
     participantes.sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');});
     var sel=document.getElementById('selPart');
     var cur=sel.value;
-    sel.innerHTML='<option value="">— Selecione para ver os palpites —</option>';
+    sel.innerHTML='<option value="">— Selecione —</option>';
     participantes.forEach(function(p,i){
       sel.innerHTML+='<option value="'+i+'"'+(i==cur?' selected':'')+'>'+p.nome+'</option>';
     });
+    // Auto-select first participant on first load
+    if(cur===''&&participantes.length>0){
+      sel.value='0';
+    }
     renderRanking();
-    if(cur!=='')mostrarPalpites();
+    mostrarPalpites();
   });
 }
 
@@ -422,33 +435,52 @@ function renderPtsCol(pal){
   var html='';
   var grandTotal=0;
 
+  function addRow(ptCls, pts, res){
+    // Pts cell
+    var ptBadge='';
+    if(ptCls==='ex'){ptBadge='<span class="pts-cell-badge ex">+'+pts+'</span>';}
+    else if(ptCls==='ok'){ptBadge='<span class="pts-cell-badge ok">+'+pts+'</span>';}
+    else if(ptCls==='no'){ptBadge='<span class="pts-cell-badge no">0</span>';}
+    else{ptBadge='<span class="pts-cell-badge vz">—</span>';}
+    // Placar real cell
+    var resBadge='';
+    if(res&&res.a!=null&&res.b!=null){
+      resBadge='<span class="pts-cell-badge res">'+res.a+'×'+res.b+'</span>';
+    } else {
+      resBadge='<span class="pts-cell-badge vz">—</span>';
+    }
+    html+='<div class="pts-cell">'+ptBadge+'</div>';
+    html+='<div class="pts-cell">'+resBadge+'</div>';
+  }
+
   // GRUPOS
   Object.keys(G).forEach(function(gl){
     var info=G[gl];
-    html+='<div class="pts-section-label">Grupo '+gl+'</div>';
+    html+='<div style="background:#f0f3f8;font-size:.6rem;font-weight:900;color:#002776;text-transform:uppercase;padding:4px 8px;border-bottom:1px solid #e8eaf0;text-align:center">Grupo '+gl+'</div>';
+    html+='<div class="pts-rows-wrap">';
     info.jogos.forEach(function(j){
       var pp=pal['g'+j.id];
       var res=resultadosOficiais['g'+j.id];
       var ptCls=getPtJogo(res,pp);
-      var badge='';
-      if(ptCls==='ex'){badge='<span class="pts-row-badge ex">+10</span>';grandTotal+=10;}
-      else if(ptCls==='ok'){badge='<span class="pts-row-badge ok">+5</span>';grandTotal+=5;}
-      else if(ptCls==='no') badge='<span class="pts-row-badge no">0</span>';
-      else badge='<span class="pts-row-badge vz">—</span>';
-      html+='<div class="pts-row"><span class="pts-row-jogo">#'+j.id+'</span>'+badge+'</div>';
+      var pts=0;
+      if(ptCls==='ex'){pts=10;grandTotal+=10;}
+      else if(ptCls==='ok'){pts=5;grandTotal+=5;}
+      addRow(ptCls,pts,res);
     });
+    html+='</div>';
   });
 
   // ELIMINATÓRIAS
   var fases=[
-    {label:'Segundas de Final',jogos:SEG,bonus:5},
-    {label:'Oitavas de Final',jogos:OIT,bonus:10},
-    {label:'Quartas de Final',jogos:QUA,bonus:15},
+    {label:'Segundas',jogos:SEG,bonus:5},
+    {label:'Oitavas',jogos:OIT,bonus:10},
+    {label:'Quartas',jogos:QUA,bonus:15},
     {label:'Semifinais',jogos:SEMI,bonus:20},
-    {label:'3° Lugar e Final',jogos:[TERC,FINAL],bonus:0}
+    {label:'Final',jogos:[TERC,FINAL],bonus:0}
   ];
   fases.forEach(function(fase){
-    html+='<div class="pts-section-label">'+fase.label+'</div>';
+    html+='<div style="background:#f0f3f8;font-size:.6rem;font-weight:900;color:#002776;text-transform:uppercase;padding:4px 8px;border-bottom:1px solid #e8eaf0;text-align:center">'+fase.label+'</div>';
+    html+='<div class="pts-rows-wrap">';
     fase.jogos.forEach(function(j){
       var pp=pal['mm'+j.id];
       var res=resultadosOficiais['mm'+j.id];
@@ -457,19 +489,14 @@ function renderPtsCol(pal){
       if(ptCls==='ex')pts=10;
       else if(ptCls==='ok')pts=5;
       if(fase.bonus>0&&res&&res.v&&pp&&pp.v===res.v)pts+=fase.bonus;
-      var badge='';
-      if(res&&res.a!=null&&pp&&pp.a!=null){
-        grandTotal+=pts;
-        if(pts>0) badge='<span class="pts-row-badge '+(ptCls==='ex'?'ex':'ok')+'">+'+pts+'</span>';
-        else badge='<span class="pts-row-badge no">0</span>';
-      } else {
-        badge='<span class="pts-row-badge vz">—</span>';
-      }
-      html+='<div class="pts-row"><span class="pts-row-jogo">#'+j.id+'</span>'+badge+'</div>';
+      if(res&&res.a!=null&&pp&&pp.a!=null) grandTotal+=pts;
+      if(!(res&&res.a!=null&&pp&&pp.a!=null)) ptCls=null;
+      addRow(ptCls,pts,res&&res.a!=null?res:null);
     });
+    html+='</div>';
   });
 
-  html+='<div class="pts-total-row"><span>Total</span><span style="color:#00a651">'+grandTotal+' pts</span></div>';
+  html+='<div class="pts-total-row"><span>TOTAL</span><span style="color:#00a651">'+grandTotal+' pts</span></div>';
   el.innerHTML=html;
   var sub=document.getElementById('ptsTotal');
   if(sub) sub.textContent=grandTotal+' pts';

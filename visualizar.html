@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v2.6 -->
+<!DOCTYPE html><!-- v2.7 -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -361,7 +361,7 @@ function calcPontos(pal){
     var jogosComRes=G[gl].jogos.filter(function(j){var r=resultadosOficiais['g'+j.id];return r&&r.a!=null;}).length;
     if(jogosComRes===6){
       var co=calcClassOficial(gl),cp=calcClassPart(gl,pal);
-      if(co&&cp){if(co[0]&&cp[0]===co[0])total+=5;if(co[1]&&cp[1]===co[1])total+=5;}
+      if(co&&cp){if(co[0]&&cp[0]===co[0].time)total+=5;if(co[1]&&cp[1]===co[1].time)total+=5;}
     }
   }
   var fasesMM=[{jogos:SEG,bonus:5},{jogos:OIT,bonus:10},{jogos:QUA,bonus:15},{jogos:SEMI,bonus:20},{jogos:[TERC,FINAL],bonus:0}];

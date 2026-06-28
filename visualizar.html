@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v6.6 -->
+<!DOCTYPE html><!-- v7.0 -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -368,32 +368,6 @@ function normTime(t){
 }
 
 
-function checkBonus(res, pp, j, faseJogos){
-  if(!res||!pp) return false;
-  // Game must have been played (placar inserted)
-  if(res.a==null) return false;
-  // Find if this game has a tc slot
-  var tcSlot=null;
-  faseJogos.forEach(function(fj){
-    if(fj.id===j.id){
-      if(fj.t1&&fj.t1.tc!==undefined) tcSlot='t1';
-      else if(fj.t2&&fj.t2.tc!==undefined) tcSlot='t2';
-    }
-  });
-  if(tcSlot){
-    // tc slot: compare only the 3rd place slot
-    var resTeam=normTime(tcSlot==='t1'?(res.t1||''):(res.t2||''));
-    if(!resTeam||resTeam.length<2) return false;
-    var ppTeam=normTime(tcSlot==='t1'?(pp.t1||''):(pp.t2||''));
-    return ppTeam===resTeam;
-  } else {
-    // Regular game: compare t1, t2 and winner
-    var rt1=normTime(res.t1||''),rt2=normTime(res.t2||'');
-    var pt1=normTime(pp.t1||''),pt2=normTime(pp.t2||'');
-    return (rt1&&pt1&&rt1===pt1&&rt2&&pt2&&rt2===pt2&&normTime(pp.v||'')===normTime(res.v||''));
-  }
-}
-
 function calcPontos(pal){
   var total=0,acertos=0,exatos=0;
   for(var gl in G){
@@ -415,9 +389,7 @@ function calcPontos(pal){
     fase.jogos.forEach(function(j){
       var res=resultadosOficiais['mm'+j.id],p=pal['mm'+j.id];
       // Check classificado bonus
-      if(fase.bonus>0&&checkBonus(res,p,j,fase.jogos)){
-        total+=fase.bonus;
-      }
+      if(fase.bonus>0&&res&&res.v&&p&&p.v&&res.v===p.v) total+=fase.bonus;
       if(!res||res.a==null||!p||p.a==null||p.b==null)return;
       var ra=+res.a,rb=+res.b,pa=+p.a,pb=+p.b;
       if(pa===ra&&pb===rb){total+=10;exatos++;acertos++;}
@@ -1002,67 +974,15 @@ window.toggleRankDetail = function(idx){
         var t1=pp&&pp.t1?pp.t1:'?',t2=pp&&pp.t2?pp.t2:'?';
         jogosComPontos.push({id:j.id,t1:t1,t2:t2,placar:pp.a+'×'+pp.b,pts:pts,cls:ptCls,dt:new Date(0)});
       }
-      // Check classificado bonus
-      var isTcClass=false;
-      fase.jogos.forEach(function(fj){if(fj.id===j.id&&((fj.t1&&fj.t1.tc!==undefined)||(fj.t2&&fj.t2.tc!==undefined)))isTcClass=true;});
-      if(fase.bonus>0&&res&&pp&&res.a!=null){
-        var bOk2=false;
-        if(isTcClass&&(res.t1||res.t2)){
-          // Only check the tc slot (not the auto-calculated 1st/2nd place slot)
-          var tcSlotRes='';
-          fase.jogos.forEach(function(fj){
-            if(fj.id===j.id){
-              if(fj.t2&&fj.t2.tc!==undefined) tcSlotRes=normTime(res.t2||'');
-              else if(fj.t1&&fj.t1.tc!==undefined) tcSlotRes=normTime(res.t1||'');
-            }
-          });
-          if(tcSlotRes&&tcSlotRes.length>1){
-            var ppVals=[normTime(pp.t1||''),normTime(pp.t2||''),normTime(pp.v||''),normTime(pp.p||'')];
-            if(ppVals.some(function(v){return v&&v===tcSlotRes;})) bOk2=true;
-          }
-        } else {
-          if(res.v&&pp.v&&pp.v!==''&&normTime(pp.v)===normTime(res.v)) bOk2=true;
-        }
-        // Only push if bOk2 is true AND this is a tc game with official team saved
-        if(bOk2&&isTcClass){
-          // Show the official tc team name
-          var tcTeam=res.t1&&res.t1.length>1?res.t1:(res.t2&&res.t2.length>1?res.t2:'');
-          if(tcTeam) classAcertos[fase.key].push({time:tcTeam});
-        } else if(bOk2&&!isTcClass){
-          // Regular game: show the winner
-          if(res.v&&res.v.length>1) classAcertos[fase.key].push({time:res.v});
-        }
-      }
     });
   });
 
   jogosComPontos.sort(function(a,b){return a.dt-b.dt||a.id-b.id;});
 
-  // Check 3° colocados acertados nas Segundas de Final
-  SEG.forEach(function(j){
-    try{
-      var res=resultadosOficiais['mm'+j.id];
-      var pp=pal['mm'+j.id];
-      if(!res||!pp) return;
-      // Skip if no team name saved yet (tc game not yet filled)
-      if(!res.t1&&!res.t2) return;
-      // Only process games with tc slots
-      var tcSlot=(j.t1&&j.t1.tc!==undefined)?'t1':(j.t2&&j.t2.tc!==undefined)?'t2':null;
-      if(!tcSlot) return;
-      // Get official team in the tc slot
-      var resTeam=normTime((tcSlot==='t1'?res.t1:res.t2)||'');
-      if(!resTeam||resTeam.length<2) return;
-      // Get all participant team fields
-      var pFields=[normTime(pp.t1||''),normTime(pp.t2||''),normTime(pp.v||''),normTime(pp.p||'')];
-      var acertou=pFields.some(function(f){return f&&f===resTeam;});
-      if(acertou) classGrupos.push({time:(tcSlot==='t1'?res.t1:res.t2),fase:'3° colocado'});
-    }catch(e){console.log('SEG forEach error:',e);}
-  });
-
-  // Calc classificados total pts
+    // Calc classificados total pts
   var ptClass=(classGrupos.length*5);
   var classTotal=[];
-  if(classGrupos.length>0) classTotal.push({fase:'Grupos (1°/2° e 3°)',times:classGrupos,pts:classGrupos.length*5});
+  if(classGrupos.length>0) classTotal.push({fase:'Grupos (1°/2°)',times:classGrupos,pts:classGrupos.length*5});
   var faseNomes={seg:{nome:'Classificados 16ª de Final',pts:5},oit:{nome:'Classificados Oitavas',pts:10},qua:{nome:'Classificados Quartas',pts:15},semi:{nome:'Classificados Semifinais',pts:20}};
   Object.keys(faseNomes).forEach(function(k){
     if(classAcertos[k].length>0){

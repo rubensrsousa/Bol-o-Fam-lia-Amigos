@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v6.4 -->
+<!DOCTYPE html><!-- v6.5 -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -370,6 +370,8 @@ function normTime(t){
 
 function checkBonus(res, pp, j, faseJogos){
   if(!res||!pp) return false;
+  // Game must have been played (placar inserted)
+  if(res.a==null) return false;
   // Find if this game has a tc slot
   var tcSlot=null;
   faseJogos.forEach(function(fj){
@@ -379,14 +381,13 @@ function checkBonus(res, pp, j, faseJogos){
     }
   });
   if(tcSlot){
-    // For tc games: only the tc slot matters, and it must be saved
+    // tc slot: compare only the 3rd place slot
     var resTeam=normTime(tcSlot==='t1'?(res.t1||''):(res.t2||''));
     if(!resTeam||resTeam.length<2) return false;
     var ppTeam=normTime(tcSlot==='t1'?(pp.t1||''):(pp.t2||''));
     return ppTeam===resTeam;
   } else {
-    // Regular game: res must have a result, compare t1 and t2 directly
-    if(res.a==null) return false;
+    // Regular game: compare t1, t2 and winner
     var rt1=normTime(res.t1||''),rt2=normTime(res.t2||'');
     var pt1=normTime(pp.t1||''),pt2=normTime(pp.t2||'');
     return (rt1&&pt1&&rt1===pt1&&rt2&&pt2&&rt2===pt2&&normTime(pp.v||'')===normTime(res.v||''));

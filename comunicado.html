@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunicado — Bolão Copa 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',Arial,sans-serif;background:#f0f2f7;min-height:100vh;display:flex;justify-content:center;padding:20px 12px}
+
+  .card{background:#fff;border-radius:18px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 8px 36px rgba(0,39,118,.15)}
+
+  .header{background:linear-gradient(135deg,#002776 0%,#003ab2 60%,#8b0000 100%);padding:22px 20px 18px;text-align:center;position:relative;overflow:hidden}
+  .header::before{content:'⚠️';position:absolute;right:-12px;top:-12px;font-size:90px;opacity:.08}
+  .header-tag{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 12px;border-radius:20px;margin-bottom:8px}
+  .header h1{font-family:'Bebas Neue','Arial Black',sans-serif;font-size:1.7rem;color:#f5d400;letter-spacing:2px;line-height:1.1}
+  .header p{color:rgba(255,255,255,.7);font-size:.7rem;margin-top:2px}
+
+  .body{padding:18px 20px}
+  .intro{font-size:.85rem;color:#333;line-height:1.5;margin-bottom:14px}
+
+  .alert-box{background:#fff3cd;border:2px solid #ffc107;border-radius:10px;padding:12px 14px;margin-bottom:14px}
+  .alert-box p{font-size:.78rem;font-weight:900;color:#664d03;line-height:1.4;text-align:center;text-transform:uppercase}
+
+  .info-box{background:#e8f0fe;border-left:4px solid #002776;border-radius:6px;padding:10px 12px;margin-bottom:16px}
+  .info-box p{font-size:.78rem;color:#002776;line-height:1.4}
+
+  .sec-title{font-size:.7rem;font-weight:900;color:#002776;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+
+  .opcao{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:8px;border:1.5px solid #eef0f8;cursor:pointer;transition:transform .1s;position:relative}
+  .opcao:active{transform:scale(0.98)}
+  .opcao.votado{box-shadow:0 0 0 2px #002776 inset}
+  .opcao-votos{position:absolute;right:10px;bottom:6px;font-size:.62rem;font-weight:900;color:#002776;background:#fff;border-radius:10px;padding:2px 8px}
+  .nome-wrap{margin-top:10px}
+  .nome-wrap input{width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #ccd4e8;font-size:.8rem;font-family:inherit}
+  .opcao.op1{background:#f0fff4;border-color:#86d49a}
+  .opcao.op2{background:#fff5f5;border-color:#f5b8b8}
+  .opcao.op3{background:#f4f6fb;border-color:#c8d0e0}
+  .opcao.op4{background:#fff5f5;border-color:#f5b8b8}
+  .opcao-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;flex-shrink:0;color:#fff}
+  .op1 .opcao-num{background:#007a3d}
+  .op2 .opcao-num{background:#c0392b}
+  .op3 .opcao-num{background:#5a6a8a}
+  .op4 .opcao-num{background:#c0392b}
+  .opcao-texto{font-size:.78rem;color:#333;line-height:1.4;padding-top:2px}
+
+  .prazo{background:#002776;color:#fff;text-align:center;border-radius:10px;padding:10px;margin-top:14px;font-size:.78rem;font-weight:700}
+
+  .ps{margin-top:16px;padding-top:14px;border-top:1px solid #eee;font-size:.72rem;color:#888;line-height:1.5;font-style:italic}
+
+  .footer{text-align:center;padding:14px 20px 18px;font-size:.65rem;color:#bbb}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="header">
+    <div class="header-tag">Aviso Importante</div>
+    <h1>🏆 Bolão Copa 2026</h1>
+    <p>Comunicado oficial aos participantes</p>
+  </div>
+
+  <div class="body">
+    <p class="intro">Pessoal, identifiquei um erro nas posições dos times que estão passando para as <b>Oitavas de Final</b>. Peço desculpas pelo transtorno!</p>
+
+    <div class="alert-box">
+      <p>⚠️ As oitavas em diante posicionaram os confrontos errados</p>
+    </div>
+
+    <div class="info-box">
+      <p>📌 Será preciso apenas <b>inserir novamente os placares</b> a partir das Oitavas de Final, já que a ordem dos jogos será corrigida. Suas apostas das Segundas de Final continuam intactas!</p>
+    </div>
+
+    <div class="sec-title">📋 Possibilidades — vote na sua opção</div>
+
+    <div class="opcao op1" id="opcao1" onclick="votar(1)">
+      <div class="opcao-num">1</div>
+      <div class="opcao-texto">Preencher o bolão de novo a partir das Oitavas (com os confrontos reais e corretos). Todos com chances iguais novamente.</div>
+      <div class="opcao-votos" id="votos1">0 votos</div>
+    </div>
+
+    <div class="opcao op2" id="opcao2" onclick="votar(2)">
+      <div class="opcao-num">2</div>
+      <div class="opcao-texto">Paramos o bolão agora e devolvemos o dinheiro de todos.</div>
+      <div class="opcao-votos" id="votos2">0 votos</div>
+    </div>
+
+    <div class="opcao op3" id="opcao3" onclick="votar(3)">
+      <div class="opcao-num">3</div>
+      <div class="opcao-texto">Quero sugerir outra opção.</div>
+      <div class="opcao-votos" id="votos3">0 votos</div>
+    </div>
+
+    <div class="opcao op4" id="opcao4" onclick="votar(4)">
+      <div class="opcao-num">4</div>
+      <div class="opcao-texto">Prefiro desistir do bolão e que me devolvam o valor pago.</div>
+      <div class="opcao-votos" id="votos4">0 votos</div>
+    </div>
+
+    <div id="nomeWrap" class="nome-wrap">
+      <input type="text" id="nomeVotante" placeholder="Seu nome (pra eu confirmar o voto)" />
+    </div>
+
+    <div class="prazo" id="statusVotacao">🗳️ Clique numa opção acima pra votar — total: <span id="totalVotos">0</span> votos</div>
+
+    <div class="ps">P.S.: Sou novato com ferramentas de IA e estou me esforçando bastante pra deixar tudo certo pra vocês. Agradeço a paciência! 🙏</div>
+  </div>
+
+  <div class="footer">Bolão Copa do Mundo 2026 · Família & Amigos</div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+var FBCFG = {
+  apiKey: "AIzaSyD_Txft2f70W7srOdv0RCYvdcDvdDPu80c",
+  authDomain: "bolao-2026-40ed7.firebaseapp.com",
+  projectId: "bolao-2026-40ed7",
+  storageBucket: "bolao-2026-40ed7.firebasestorage.app",
+  messagingSenderId: "62349776640",
+  appId: "1:62349776640:web:placeholder"
+};
+
+function iniciarApp(){
+  if(typeof firebase === 'undefined'){
+    setTimeout(iniciarApp, 150);
+    return;
+  }
+  firebase.initializeApp(FBCFG);
+  window.db = firebase.firestore();
+  atualizarContagem();
+}
+
+function normalizarNome(n){
+  return n.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_');
+}
+
+var meuVoto = localStorage.getItem('meuVotoBolao') || null;
+
+window.votar = function(opcao){
+  var nomeInput = document.getElementById('nomeVotante').value.trim();
+  if(!nomeInput){
+    alert('Por favor, digite seu nome antes de votar!');
+    document.getElementById('nomeVotante').focus();
+    return;
+  }
+  var id = normalizarNome(nomeInput);
+  window.db.collection('votacao_oitavas').doc(id).set({
+    nome: nomeInput,
+    opcao: opcao,
+    timestamp: new Date().toISOString()
+  }).then(function(){
+    localStorage.setItem('meuVotoBolao', opcao);
+    localStorage.setItem('meuNomeBolao', nomeInput);
+    document.getElementById('statusVotacao').innerHTML = '✅ Voto registrado! Você votou na opção ' + opcao;
+  }).catch(function(err){
+    alert('Erro ao votar: ' + err.message);
+  });
+};
+
+function atualizarContagem(){
+  window.db.collection('votacao_oitavas').onSnapshot(function(snap){
+    var contagem = {1:0, 2:0, 3:0, 4:0};
+    var total = 0;
+    snap.forEach(function(doc){
+      var op = doc.data().opcao;
+      if(contagem[op] !== undefined){
+        contagem[op]++;
+        total++;
+      }
+    });
+    for(var i=1; i<=4; i++){
+      document.getElementById('votos'+i).textContent = contagem[i] + ' voto' + (contagem[i]===1?'':'s');
+    }
+    document.getElementById('totalVotos').textContent = total;
+
+    var meuVotoSalvo = localStorage.getItem('meuVotoBolao');
+    if(meuVotoSalvo){
+      document.querySelectorAll('.opcao').forEach(function(el){el.classList.remove('votado');});
+      var elVotado = document.getElementById('opcao'+meuVotoSalvo);
+      if(elVotado) elVotado.classList.add('votado');
+    }
+  });
+}
+
+var nomeAnterior = localStorage.getItem('meuNomeBolao');
+if(nomeAnterior){
+  document.getElementById('nomeVotante').value = nomeAnterior;
+}
+if(meuVoto){
+  document.getElementById('statusVotacao').innerHTML = '✅ Você já votou na opção ' + meuVoto + '. Pode votar novamente pra mudar.';
+}
+
+iniciarApp();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Bolão Copa 2026 — Oitavas em diante</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#eef0f5;min-height:100vh}
+
+/* MODAL LOGIN */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:999}
+.modal{background:#fff;border-radius:16px;padding:28px 24px;width:90%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.modal h2{color:#002776;font-size:1.3rem;margin-bottom:4px;text-align:center}
+.modal p{color:#666;font-size:.8rem;text-align:center;margin-bottom:20px}
+.modal select,.modal input{width:100%;padding:12px;border-radius:10px;border:2px solid #dde2ef;font-size:.9rem;font-family:inherit;margin-bottom:12px;color:#002776;font-weight:700}
+.modal input{font-size:1.4rem;text-align:center;letter-spacing:8px}
+.btn-entrar{width:100%;padding:14px;background:#002776;color:#f5d400;border:none;border-radius:10px;font-size:1rem;font-weight:900;cursor:pointer}
+.erro{color:#c0392b;font-size:.78rem;text-align:center;margin-top:4px;display:none}
+
+/* APP */
+#app{display:none;max-width:480px;margin:0 auto;padding:12px}
+.header{background:linear-gradient(135deg,#002776,#003ab2);color:#fff;border-radius:12px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:1rem;font-weight:900}
+.header .nome{font-size:.75rem;color:#f5d400;font-weight:700}
+
+.fase-title{background:#002776;color:#f5d400;font-size:.72rem;font-weight:900;letter-spacing:1px;padding:8px 14px;border-radius:8px 8px 0 0;text-transform:uppercase}
+.fase-card{background:#fff;border-radius:0 0 12px 12px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);overflow:hidden}
+
+.jogo-row{padding:10px 14px;border-bottom:1px solid #f0f3f8}
+.jogo-row:last-child{border-bottom:none}
+.jogo-times{display:grid;grid-template-columns:1fr auto auto auto 1fr;align-items:center;gap:6px}
+.time-nome{font-size:.8rem;font-weight:700;color:#002776;text-align:center}
+.time-nome.direita{text-align:center}
+.time-nome.indefinido{color:#aab;font-style:italic;font-size:.72rem}
+.placar-input{width:44px;height:44px;border-radius:8px;border:2px solid #dde2ef;text-align:center;font-size:1.1rem;font-weight:900;color:#002776;font-family:inherit;-moz-appearance:textfield}
+.placar-input::-webkit-outer-spin-button,.placar-input::-webkit-inner-spin-button{-webkit-appearance:none}
+.placar-input.ok{border-color:#007a3d;background:#f0fff4}
+.vs{color:#aab;font-size:.85rem;font-weight:700}
+
+.empate-wrap{padding:6px 14px 10px;background:#fff8e1}
+.empate-label{font-size:.72rem;color:#664d03;font-weight:700;margin-bottom:6px}
+.empate-btns{display:flex;gap:8px}
+.empate-btn{flex:1;padding:8px;border-radius:8px;border:2px solid #dde2ef;background:#fff;color:#333;font-weight:700;font-size:.75rem;cursor:pointer;transition:all .15s}
+.empate-btn.ativo{background:#002776;color:#f5d400;border-color:#002776}
+
+.bloqueado{opacity:.5;pointer-events:none}
+.a-definir{color:#aab;font-style:italic}
+
+.btn-salvar{width:100%;padding:14px;background:#007a3d;color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:900;cursor:pointer;margin-top:4px}
+.btn-salvar:active{background:#005a2d}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#002776;color:#fff;padding:10px 20px;border-radius:20px;font-size:.85rem;font-weight:700;opacity:0;transition:opacity .3s;z-index:9999;white-space:nowrap}
+.toast.show{opacity:1}
+.status-bar{font-size:.68rem;color:#aab;text-align:center;padding:8px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="overlay" id="modalLogin">
+  <div class="modal">
+    <div style="font-size:2rem;text-align:center;margin-bottom:8px">🏆</div>
+    <h2>Bolão Copa 2026</h2>
+    <p>Oitavas em diante — Digite seu PIN</p>
+    <select id="selNome">
+      <option value="">Selecione seu nome...</option>
+      <option>Murilo</option><option>Caique</option><option>Aline</option>
+      <option>Adilson</option><option>Carlos</option><option>Jennifer</option>
+      <option>Genesio</option><option>Rubens</option><option>Mycaella</option>
+      <option>Asnley</option><option>Sebastião</option><option>João</option>
+      <option>Arlindo</option><option>Rikelme</option><option>Makoto</option>
+      <option>Josias</option><option>Ivanilson</option><option>Ramon</option>
+      <option>Diego</option><option>Regina</option><option>Luna</option>
+      <option>Thiago</option><option>Vitão</option><option>Renan</option>
+      <option>Arley</option><option>Lucca</option><option>Dada</option>
+      <option>Josana</option><option>Wictor</option><option>Caio</option>
+      <option>Giulia</option><option>Jorge</option>
+    </select>
+    <input type="password" inputmode="numeric" maxlength="4" id="inputPin" placeholder="••••" onkeydown="if(event.key==='Enter')entrar()">
+    <div class="erro" id="erroLogin">PIN incorreto. Tente novamente.</div>
+    <button class="btn-entrar" onclick="entrar()">ENTRAR ▶</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="header">
+    <h1>🏆 Bolão Copa 2026</h1>
+    <div class="nome" id="nomeExib"></div>
+  </div>
+  <div id="conteudo"></div>
+  <button class="btn-salvar" onclick="salvar()">💾 SALVAR PALPITES</button>
+  <button onclick="limpar()" style="width:100%;padding:10px;background:transparent;color:#c0392b;border:1px solid #c0392b;border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;margin-top:8px">🗑️ Limpar meus palpites</button>
+  <div class="status-bar" id="statusBar">Conectando...</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+var FBCFG={apiKey:"AIzaSyD_Txft2f70W7srOdv0RCYvdcDvdDPu80c",authDomain:"bolao-2026-40ed7.firebaseapp.com",projectId:"bolao-2026-40ed7",storageBucket:"bolao-2026-40ed7.firebasestorage.app",messagingSenderId:"62349776640",appId:"1:62349776640:web:bd1d43c7dc8d89a8b8c5e5"};
+firebase.initializeApp(FBCFG);
+var db=firebase.firestore();
+
+var PINS={'murilo':'2951','caique':'6234','aline':'9233','adilson':'9385','carlos':'2681','jennifer':'4658','genesio':'7891','rubens':'9975','mycaella':'9042','asnley':'8226','sebastiao':'4931','joao':'1041','arlindo':'2322','rikelme':'2814','makoto':'5706','josias':'2606','ivanilson':'8367','ramon':'1188','diego':'9032','regina':'6148','luna':'4444','thiago':'7508','vitao':'5120','renan':'6696','arley':'6843','lucca':'7166','dada':'9414','josana':'2250','wictor':'6577','caio':'2469','giulia':'9815','jorge':'5786'};
+
+
+// Bloqueio 2h antes de cada partida (horário de Brasília = UTC-3)
+// Oitavas: jogos #89-#96, Quartas: #97-#100, Semis: #101-#102, Terc: #103, Final: #104
+var JOGOS_BLOQUEIO = {
+  89:  new Date('2026-07-04T12:00:00-03:00'), // Paraguai x França — travado agora
+  90:  new Date('2026-07-04T12:00:00-03:00'), // Canadá x Marrocos — travado agora
+  91:  new Date('2026-07-06T14:00:00-03:00'), // Oitava 3 (16h - 2h)
+  92:  new Date('2026-07-06T19:00:00-03:00'), // Oitava 4 (21h - 2h)
+  93:  new Date('2026-07-05T15:00:00-03:00'), // Oitava 5 (17h - 2h)
+  94:  new Date('2026-07-05T19:00:00-03:00'), // Oitava 6 (21h - 2h)
+  95:  new Date('2026-07-07T11:00:00-03:00'), // Oitava 7 (13h - 2h)
+  96:  new Date('2026-07-07T15:00:00-03:00'), // Oitava 8 (17h - 2h)
+  97:  new Date('2026-07-09T15:00:00-03:00'), // Quarta 1 (17h - 2h)
+  98:  new Date('2026-07-10T14:00:00-03:00'), // Quarta 2 (16h - 2h)
+  99:  new Date('2026-07-11T16:00:00-03:00'), // Quarta 3 (18h - 2h)
+  100: new Date('2026-07-11T20:00:00-03:00'), // Quarta 4 (22h - 2h)
+  101: new Date('2026-07-14T14:00:00-03:00'), // Semi 1 (16h - 2h)
+  102: new Date('2026-07-15T14:00:00-03:00'), // Semi 2 (16h - 2h)
+  103: new Date('2026-07-18T16:00:00-03:00'), // 3° Lugar (18h - 2h)
+  104: new Date('2026-07-19T14:00:00-03:00'), // Final (16h - 2h)
+};
+
+function jogoTravado(id){
+  var bloqueio = JOGOS_BLOQUEIO[id];
+  if(!bloqueio) return false;
+  return new Date() >= bloqueio;
+}
+
+var OIT=[{id:89,s1:74,s2:77},{id:90,s1:73,s2:75},{id:91,s1:83,s2:84},{id:92,s1:81,s2:82},{id:93,s1:76,s2:78},{id:94,s1:79,s2:80},{id:95,s1:86,s2:88},{id:96,s1:85,s2:87}];
+var QUA=[{id:97,o1:89,o2:90},{id:98,o1:91,o2:92},{id:99,o1:93,o2:94},{id:100,o1:95,o2:96}];
+var SEMI=[{id:101,q1:97,q2:98},{id:102,q1:99,q2:100}];
+var FINAL_J={id:104,sv1:101,sv2:102};
+var TERC_J={id:103,sl1:101,sl2:102};
+
+var resOf={};  // resultados oficiais do admin
+var P={};      // palpites do participante
+var nomeParticipante='';
+var docRef=null;
+
+// Carregar resultados oficiais
+db.collection('admin').doc('resultados').onSnapshot(function(snap){
+  if(snap.exists) resOf=snap.data().resultados||{};
+  else resOf={};
+  if(nomeParticipante) render();
+});
+
+function normNome(n){
+  return n.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'');
+}
+
+function entrar(){
+  var nome=document.getElementById('selNome').value.trim();
+  var pin=document.getElementById('inputPin').value.trim();
+  var erro=document.getElementById('erroLogin');
+  if(!nome){erro.textContent='Selecione seu nome.';erro.style.display='block';return;}
+  if(!pin){erro.textContent='Digite seu PIN.';erro.style.display='block';return;}
+  var chave=normNome(nome);
+  if(!PINS[chave]||pin!==PINS[chave]){
+    erro.textContent='PIN incorreto. Tente novamente.';
+    erro.style.display='block';
+    document.getElementById('inputPin').value='';
+    return;
+  }
+  erro.style.display='none';
+  nomeParticipante=nome;
+  document.getElementById('nomeExib').textContent=nome;
+  document.getElementById('modalLogin').style.display='none';
+  document.getElementById('app').style.display='block';
+  docRef=db.collection('palpites_oitavas').doc(chave);
+  docRef.get().then(function(snap){
+    if(snap.exists) P=snap.data().palpites||{};
+    render();
+    document.getElementById('statusBar').textContent='Conectado';
+  }).catch(function(){
+    render();
+    document.getElementById('statusBar').textContent='Sem conexão';
+  });
+}
+
+// Resolve time vencedor de um jogo a partir dos palpites
+function vencedor(jogoId){
+  var p=P['mm'+jogoId];
+  if(!p||p.v==null) return null;
+  return p.v;
+}
+function perdedor(jogoId){
+  var p=P['mm'+jogoId];
+  if(!p||p.p==null) return null;
+  return p.p;
+}
+
+// Resolve times de cada fase
+function resolveSegVencedor(segId){
+  var r=resOf['mm'+segId];
+  if(!r) return 'A definir';
+  // If has a placar and winner
+  if(r.v) return r.v;
+  // If draw with manual classifier stored in v field
+  return 'A definir';
+}
+
+function timesOIT(o){
+  var t1=resolveSegVencedor(o.s1);
+  var t2=resolveSegVencedor(o.s2);
+  return{t1:t1,t2:t2};
+}
+function timesQUA(q){
+  var t1=vencedor(q.o1)||'A definir';
+  var t2=vencedor(q.o2)||'A definir';
+  return{t1:t1,t2:t2};
+}
+function timesSEMI(s){
+  var t1=vencedor(s.q1)||'A definir';
+  var t2=vencedor(s.q2)||'A definir';
+  return{t1:t1,t2:t2};
+}
+function timesFINAL(){
+  return{t1:vencedor(SEMI[0].id)||'A definir',t2:vencedor(SEMI[1].id)||'A definir'};
+}
+function timesTERC(){
+  return{t1:perdedor(SEMI[0].id)||'A definir',t2:perdedor(SEMI[1].id)||'A definir'};
+}
+
+function jogoHTML(id,t1,t2,label){
+  var p=P['mm'+id]||{};
+  var va=p.a!=null?p.a:'';
+  var vb=p.b!=null?p.b:'';
+  var pv=p.v||'';
+  var indefinido=t1==='A definir'||t2==='A definir';
+  var travado=jogoTravado(id);
+  if(travado) indefinido=true; // treat as blocked
+  var showEmpate=!indefinido&&va!==''&&vb!==''&&+va===+vb;
+  var sel1=pv===t1?'ativo':'';
+  var sel2=pv===t2?'ativo':'';
+
+  var travado=jogoTravado(id);
+  var html='<div class="jogo-row'+(indefinido||travado?' bloqueado':'')+'" id="jrow'+id+'">';
+  if(travado){
+    html+='<div style="font-size:.6rem;color:#c0392b;margin-bottom:4px">🔒 '+label+' — Travado</div>';
+  } else {
+    html+='<div style="font-size:.62rem;color:#9ab;margin-bottom:4px">'+label+'</div>';
+  }
+  html+='<div class="jogo-times">';
+  html+='<div class="time-nome'+(t1==='A definir'?' indefinido':'')+'">'+t1+'</div>';
+  html+='<input class="placar-input'+(va!==''?' ok':'')+'" type="number" inputmode="numeric" min="0" max="20" value="'+(va!==''?va:'')+'" placeholder="-" '+(indefinido?'disabled ':'')+' onchange="upd('+id+',0,this.value)">';
+  html+='<span class="vs">×</span>';
+  html+='<input class="placar-input'+(vb!==''?' ok':'')+'" type="number" inputmode="numeric" min="0" max="20" value="'+(vb!==''?vb:'')+'" placeholder="-" '+(indefinido?'disabled ':'')+' onchange="upd('+id+',1,this.value)">';
+  html+='<div class="time-nome'+(t2==='A definir'?' indefinido':'')+'">'+t2+'</div>';
+  html+='</div>';
+
+  if(showEmpate){
+    html+='<div class="empate-wrap"><div class="empate-label">Quem se classifica?</div>';
+    html+='<div class="empate-btns">';
+    html+='<button class="empate-btn '+sel1+'" data-id="'+id+'" data-w="0" onclick="setClass(this)">'+t1+'</button>';
+    html+='<button class="empate-btn '+sel2+'" data-id="'+id+'" data-w="1" onclick="setClass(this)">'+t2+'</button>';
+    html+='</div></div>';
+  }
+  html+='</div>';
+  return html;
+}
+
+function temPalpitesOIT(){
+  return OIT.some(function(o){
+    var p=P['mm'+o.id];
+    return p&&p.a!=null&&p.b!=null;
+  });
+}
+
+function render(){
+  var html='';
+
+  // OITAVAS
+  html+='<div class="fase-title">⚽ Oitavas de Final <span style="float:right;font-weight:400">Bônus +10 pts</span></div>';
+  html+='<div class="fase-card">';
+  OIT.forEach(function(o,i){
+    var t=timesOIT(o);
+    html+=jogoHTML(o.id,t.t1,t.t2,'Oitava '+(i+1));
+  });
+  html+='</div>';
+
+  // Só mostra fases seguintes se tiver palpites nas Oitavas
+  if(!temPalpitesOIT()){
+    html+='<div style="text-align:center;padding:20px;color:#aab;font-size:.82rem">Preencha e salve os palpites das Oitavas para liberar as fases seguintes.</div>';
+    document.getElementById('conteudo').innerHTML=html;
+    return;
+  }
+
+  // QUARTAS
+  html+='<div class="fase-title">⚽ Quartas de Final <span style="float:right;font-weight:400">Bônus +15 pts</span></div>';
+  html+='<div class="fase-card">';
+  QUA.forEach(function(q,i){
+    var t=timesQUA(q);
+    html+=jogoHTML(q.id,t.t1,t.t2,'Quarta '+(i+1));
+  });
+  html+='</div>';
+
+  // SEMIS
+  html+='<div class="fase-title">⚽ Semifinais <span style="float:right;font-weight:400">Bônus +20 pts</span></div>';
+  html+='<div class="fase-card">';
+  SEMI.forEach(function(s,i){
+    var t=timesSEMI(s);
+    html+=jogoHTML(s.id,t.t1,t.t2,'Semifinal '+(i+1));
+  });
+  html+='</div>';
+
+  // FINAL & 3° LUGAR
+  html+='<div class="fase-title">🏆 Final & 3° Lugar</div>';
+  html+='<div class="fase-card">';
+  var tf=timesFINAL(), tt=timesTERC();
+  html+=jogoHTML(TERC_J.id,tt.t1,tt.t2,'3° Lugar');
+  html+=jogoHTML(FINAL_J.id,tf.t1,tf.t2,'🏆 Final');
+  html+='</div>';
+
+  document.getElementById('conteudo').innerHTML=html;
+}
+
+function upd(id,slot,val){
+  var key='mm'+id;
+  if(!P[key]) P[key]={t1:'',t2:'',a:null,b:null,v:null,p:null};
+  if(slot===0) P[key].a=val===''?null:+val;
+  else P[key].b=val===''?null:+val;
+  // Auto-set winner
+  var a=P[key].a, b=P[key].b;
+  // Get team names
+  var t1='',t2='';
+  OIT.forEach(function(o){if(o.id===id){var t=timesOIT(o);t1=t.t1;t2=t.t2;}});
+  QUA.forEach(function(q){if(q.id===id){var t=timesQUA(q);t1=t.t1;t2=t.t2;}});
+  SEMI.forEach(function(s){if(s.id===id){var t=timesSEMI(s);t1=t.t1;t2=t.t2;}});
+  if(id===FINAL_J.id){var t=timesFINAL();t1=t.t1;t2=t.t2;}
+  if(id===TERC_J.id){var t=timesTERC();t1=t.t1;t2=t.t2;}
+  P[key].t1=t1; P[key].t2=t2;
+  if(a!=null&&b!=null){
+    if(a>b){P[key].v=t1;P[key].p=t2;}
+    else if(b>a){P[key].v=t2;P[key].p=t1;}
+    else{P[key].v=null;P[key].p=null;}
+  }
+  render();
+}
+
+function setClass(btn){
+  var id=parseInt(btn.dataset.id);
+  var w=parseInt(btn.dataset.w);
+  var key='mm'+id;
+  var t1='',t2='';
+  OIT.forEach(function(o){if(o.id===id){var t=timesOIT(o);t1=t.t1;t2=t.t2;}});
+  QUA.forEach(function(q){if(q.id===id){var t=timesQUA(q);t1=t.t1;t2=t.t2;}});
+  SEMI.forEach(function(s){if(s.id===id){var t=timesSEMI(s);t1=t.t1;t2=t.t2;}});
+  if(!P[key]) P[key]={t1:t1,t2:t2,a:null,b:null,v:null,p:null};
+  P[key].v=w===0?t1:t2;
+  P[key].p=w===0?t2:t1;
+  render();
+}
+
+function salvar(){
+  if(!docRef){showToast('Faça login primeiro!');return;}
+  docRef.set({nome:nomeParticipante,palpites:P,ts:Date.now()}).then(function(){
+    showToast('✅ Salvo com sucesso!');
+    document.getElementById('statusBar').textContent='Salvo agora';
+  }).catch(function(){
+    showToast('⚠️ Erro ao salvar!');
+  });
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2500);
+}
+
+function limpar(){
+  if(!confirm('Tem certeza? Isso vai apagar todos os seus palpites das Oitavas em diante!')) return;
+  P={};
+  if(docRef) docRef.delete().then(function(){
+    showToast('🗑️ Palpites apagados!');
+    render();
+  });
+}
+
+window.upd=upd;
+window.setClass=setClass;
+window.entrar=entrar;
+</script>
+</body>
+</html>

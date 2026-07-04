@@ -366,6 +366,7 @@ function getPtJogo(res,pal){
   if((ra>rb&&pa>pb)||(ra<rb&&pa<pb)||(ra===rb&&pa===pb))return 'ok';
   return 'no';
 }
+function normalizar(n){return(n||'').toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_');}
 function normTime(t){
   if(!t) return '';
   return t.replace(/\s*\(3°[^)]*\)/g,'').replace(/\s*\([^)]*\)/g,'').trim();
@@ -457,12 +458,11 @@ function iniciar(){
   db.collection('palpites_oitavas').onSnapshot(function(snap){
     snap.forEach(function(d){
       var data=d.data();
-      if(data.nome) palpitesOitavas[data.nome]=data.palpites||{};
+      var pal=data.palpites||{};
+      if(data.nome) palpitesOitavas[data.nome]=pal;
+      palpitesOitavas[d.id]=pal;
     });
-  });
-
-  db.collection('palpites_oitavas').onSnapshot(function(snap){
-    snap.forEach(function(d){palpitesOitavas[d.id]=d.data().palpites||{};});
+    renderRanking();
   });
 
   db.collection('palpites').onSnapshot(function(snap){
@@ -495,7 +495,10 @@ function showTab(tab){
 
 function renderRanking(){
   var lista=participantes.map(function(p){
-    var r=calcPontos(p.palpites||{});
+    // Merge: original palpites for groups+seg, palpitesOitavas for OIT+
+    var palOit=palpitesOitavas[p.nome]||palpitesOitavas[normalizar(p.nome)]||{};
+    var palMerged=Object.assign({},p.palpites||{},palOit);
+    var r=calcPontos(palMerged);
     return{nome:p.nome,total:r.total,acertos:r.acertos,exatos:r.exatos};
   }).sort(function(a,b){return b.total-a.total||b.exatos-a.exatos||b.acertos-a.acertos;});
   document.getElementById('rankSub').textContent=lista.length+' participantes';
@@ -827,7 +830,10 @@ function buildJogoDetail(tipo,id){
   var res=resultadosOficiais[tipo+id];
 
   participantes.forEach(function(p){
-    var pal=p.palpites||{};
+    var _nn=p.nome||'';
+    var _nk=_nn.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_');
+    var palOit3=palpitesOitavas[_nn]||palpitesOitavas[_nk]||{};
+    var pal=Object.assign({},p.palpites||{},palOit3);
     var pp=pal[tipo+id];
     if(!pp||pp.a==null||pp.b==null)return;
     var pa=+pp.a,pb=+pp.b;
@@ -958,7 +964,8 @@ window.toggleRankDetail = function(idx){
   if(det.classList.contains('aberto')){det.classList.remove('aberto');return;}
   document.querySelectorAll('.rank-detail.aberto').forEach(function(d){d.classList.remove('aberto');});
 
-  var pal=p.pal;
+  var palOit2=palpitesOitavas[p.nome]||palpitesOitavas[normalizar(p.nome)]||{};
+  var pal=Object.assign({},p.pal||{},palOit2);
   var ptExato=0,qtExato=0,ptResult=0,qtResult=0;
   var jogosComPontos=[];
 
